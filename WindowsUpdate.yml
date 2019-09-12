@@ -1,0 +1,28 @@
+- name: "Run updates on Terminal then wait 30 seconds"
+  hosts: Windows
+
+  tasks:
+          - name: "Search for updates and record in log"
+            win_updates:
+                  category_names:
+                          - SecurityUpdates
+                          - CriticalUpdates
+                          - UpdateRollups
+                  state: searched
+                  log_path: c:\ansible_logs.txt
+
+
+          - name: "Check for Windows updates"
+            win_updates:
+                  category_names:
+                          - Application
+                          - CriticalUpdates
+                          - DefinitionUpdates
+                          - SecurityUpdates
+                          - Updates
+                  State: installed
+            register: update_result
+
+          - name: "Reboot host if required"
+            win_reboot:
+            when: update_result.reboot_required
